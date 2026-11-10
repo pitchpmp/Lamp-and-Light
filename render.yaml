@@ -1,0 +1,56 @@
+# Lamp & Light Coaching — Road One program on Render.
+#
+# A Blueprint for ONE Web Service (not a static site): the program is a
+# live Bun server with student sign-in and per-student saving, backed
+# by one SQLite file on a persistent disk.
+#
+# Runtime note: Render runs Bun apps on its Node runtime — the service
+# is created as "Node", and the build/start commands below invoke Bun
+# directly (bun.lock is in the repo), so the server process genuinely
+# runs under Bun and can use bun:sqlite. This mirrors Bun's own Render
+# deployment guide.
+#
+# James can either create the service by hand in the Render dashboard
+# using the settings in RENDER-DEPLOY-README.md (they match this file
+# line for line), or use Render's "New > Blueprint" and let this file
+# fill them in.
+services:
+  - type: web
+    name: lamp-and-light-coaching
+    runtime: node
+    plan: starter
+    buildCommand: bun install && bun run build:client
+    # "bun run start" first runs scripts/init-prod-db.ts (creates the
+    # database tables on the disk if they are not there yet — safe on
+    # every boot, never touches student data), then starts the server.
+    startCommand: bun run start
+    healthCheckPath: /health
+    envVars:
+      # The server binds 127.0.0.1 by default; Render needs it on all
+      # interfaces. PORT is NOT set here — Render assigns it and the
+      # server reads it automatically.
+      - key: HOST
+        value: 0.0.0.0
+      # The one SQLite file lives on the persistent disk below, so
+      # student work survives every deploy. (Accounts live in Supabase
+      # Auth, not in this file.)
+      - key: DB_PATH
+        value: /var/data/lampandlight.db
+      # Student sign-in is Supabase Auth — the same accounts the live
+      # site uses. The server needs the project URL to verify the
+      # access tokens students present (it checks them against the
+      # project's public signing keys; no secret is involved). This
+      # URL is a public value, already shipped by the live site.
+      - key: SUPABASE_URL
+        value: https://vaikkfgrnwiqmbueridr.supabase.co
+      # OPTIONAL legacy fallback, normally left BLANK: only needed if
+      # Supabase tokens ever arrive signed with the old shared-secret
+      # scheme (HS256). sync: false means Render asks for the value in
+      # the dashboard at apply time — the value must never be written
+      # here or anywhere in this repo. Leaving it unset is correct.
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+    disk:
+      name: lampandlight-data
+      mountPath: /var/data
+      sizeGB: 1

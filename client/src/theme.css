@@ -1,0 +1,176 @@
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+@theme {
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 52px;
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f7f1e5;
+  --surface: #fffdf8;
+  --text: #2b2620;
+  --dim: #5d6863;
+  --border: #cfc7b8;
+  --accent: #112241;
+  --radius: 12px;
+  --space-surface: var(--surface);
+  --space-surface-alt: #efe7d6;
+  --space-muted: var(--dim);
+  --space-border: var(--border);
+  --space-accent: var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #171c26;
+    --surface: #1f2735;
+    --text: #ece5d3;
+    --dim: #a8a294;
+    --border: #3a4356;
+    --accent: #d8b879;
+    --space-surface-alt: #28303f;
+  }
+}
+
+@keyframes lamp-rays {
+  0%, 100% { opacity: 0.35; transform: scaleY(0.92); }
+  50% { opacity: 1; transform: scaleY(1.05); }
+}
+.lamp-rays { transform-origin: bottom center; animation: lamp-rays 5s ease-in-out infinite; }
+
+/* Self-Concept circle: arrows travel around the ring, node to node.
+   Shown at every width — phone and desktop alike. */
+@keyframes sc-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes sc-dash { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -240; } }
+.sc-rotor { animation: sc-rotate 24s linear infinite; transform-box: view-box; transform-origin: center; }
+.sc-dash { animation: sc-dash 9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .lamp-rays, .sc-rotor, .sc-dash { animation: none; }
+}
+
+/* The 9 Environments graph (Tab 8, Lesson 4): the nine environment
+   circles slowly orbit the fixed center YOU. The ring group rotates
+   one way; each circle counter-rotates at the same speed around its
+   own center, so its label stays upright and readable all the way
+   around. One revolution takes 90 seconds — a drift, not a spin.
+   The printable sheet uses a separate static rendering, so none of
+   this reaches paper. */
+@keyframes env-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes env-spin-rev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+.env-orbit { animation: env-spin 90s linear infinite; transform-box: view-box; transform-origin: center; }
+.env-node { animation: env-spin-rev 90s linear infinite; transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .env-orbit, .env-node { animation: none; }
+}
+
+/* Tab 3 Tid-Bit 80/20 bar: the two-segment bar slides in from the
+   left when the lesson opens — navy fills 80%, brass the last 20%.
+   The component mounts fresh each time the lesson is opened, so the
+   animation replays on every visit. */
+@keyframes pareto-slide { from { transform: translateX(-102%); } to { transform: translateX(0); } }
+.pareto-bar { animation: pareto-slide 1.4s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .pareto-bar { animation: none; }
+}
+
+/* Anchoring Diagram: the anchor point at the peak of the state glows. */
+@keyframes anchor-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+.anchor-glow { animation: anchor-glow 3s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .anchor-glow { animation: none; opacity: 0.6; }
+}
+
+/* Tab pictures on the program home page: each tab row carries the
+   little SVG illustration the live-site copy shows (its TAB_ART set,
+   copied verbatim into tabArt.tsx at James's request, 2026-11-10).
+   Same placement and size as the website copy's .module-pic: a
+   full-width banner at the top of the row, 118px tall, 96px on
+   narrow screens, rounded corners with a thin border. */
+.tab-pic { display: block; height: 118px; border-radius: 8px; overflow: hidden; margin-bottom: 14px; border: 1px solid #cfc7b8; }
+.tab-pic svg { width: 100%; height: 100%; display: block; }
+@media (max-width: 700px) {
+  .tab-pic { height: 96px; }
+}
+
+/* Homepage logo beams: the logo itself is a still picture, so an
+   SVG overlay (in App.tsx's HomeView cover) draws two gold beams
+   over the logo's own, rising from the sun on the horizon — the
+   stroke draws upward over ~3s when the home page opens, over a
+   soft glow at the sun — then the whole overlay breathes very
+   gently. Subtle on purpose. Screen-only: reduced-motion and print
+   get the beams still and fully drawn. */
+@keyframes logo-beam-rise { from { stroke-dashoffset: 517; } to { stroke-dashoffset: 0; } }
+@keyframes logo-glow-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes logo-breathe { from { opacity: 0.85; } to { opacity: 1; } }
+.logo-beams { animation: logo-breathe 7s ease-in-out 3.4s infinite alternate; }
+.logo-beam { stroke-dasharray: 517; stroke-dashoffset: 0; animation: logo-beam-rise 3s cubic-bezier(0.3, 0.7, 0.3, 1) both; }
+.logo-beam-glow { opacity: 0.16; filter: blur(3px); animation: logo-glow-in 3s ease-out both; }
+.logo-sun-glow { animation: logo-glow-in 3s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .logo-beams, .logo-beam, .logo-beam-glow, .logo-sun-glow { animation: none; }
+}
+@media print {
+  .logo-beams, .logo-beam, .logo-beam-glow, .logo-sun-glow { animation: none; }
+}
+
+/* ---------------- print sheets ----------------
+   Four places in the program print a clean sheet: the E+R=O poster,
+   the student's I AM statements, the Goal Tracking Sheet, and a blank
+   gratitude journal page. window.print() is a no-op inside the app's
+   sandboxed frame, so a print button opens a sheet view (a
+   .print-overlay portal on <body>) showing the sheet alone on a paper
+   page, and the sheet view's Print button opens the sheet as a
+   standalone page in a new browser tab, where the student prints
+   with Ctrl+P / Cmd+P (that page carries its own print styling,
+   sized to the printable width of portrait paper); while the view
+   is closed the sheet also renders hidden so a
+   browser print from the lesson still works. In print the app root
+   and the view's toolbar are removed entirely and only the sheet
+   shows — no navigation, no framing — in full program color. */
+.print-sheet { display: none; }
+.print-sheet-open {
+  display: block !important;
+  background: #fffdf8;
+  color: #2b2620;
+}
+@media print {
+  [data-generated-space-root] { display: none !important; }
+  .print-toolbar, .print-note { display: none !important; }
+  .print-overlay {
+    position: static !important;
+    overflow: visible !important;
+    background: none !important;
+  }
+  .print-sheet {
+    display: block !important;
+    background: #fffdf8;
+    color: #2b2620;
+  }
+  .print-sheet-open {
+    box-shadow: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+  }
+  .print-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { margin: 0.6in; }
+}
