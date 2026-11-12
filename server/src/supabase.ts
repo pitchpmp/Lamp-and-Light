@@ -27,10 +27,22 @@
 import { createSecretKey } from "node:crypto";
 import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from "jose";
 
-const SUPABASE_URL = (process.env.SUPABASE_URL ?? "").replace(/\/+$/, "");
+// Public project URL — the same value already shipped in the client
+// bundle and shown on the Supabase dashboard. It is NOT a secret.
+// Built in as the default so the service boots with ZERO dashboard
+// settings (2026-11-10 fix: three Render deploys failed because the
+// SUPABASE_URL env var set in the dashboard never reached the
+// process). The env var, when set and non-empty, still overrides it.
+export const DEFAULT_SUPABASE_URL =
+  "https://vaikkfgrnwiqmbueridr.supabase.co";
+
+const SUPABASE_URL = (
+  process.env.SUPABASE_URL?.trim() || DEFAULT_SUPABASE_URL
+).replace(/\/+$/, "");
 const JWT_SECRET = process.env.SUPABASE_JWT_SECRET ?? "";
 
 export const supabaseConfigured = SUPABASE_URL.length > 0;
+export { SUPABASE_URL };
 
 const ISSUER = `${SUPABASE_URL}/auth/v1`;
 

@@ -77,9 +77,11 @@ live server, not static files), connect the repo, and fill in:
 | `SUPABASE_URL` | `https://vaikkfgrnwiqmbueridr.supabase.co` |
 | `SUPABASE_JWT_SECRET` | *(leave blank — see the note above)* |
 
-The Blueprint (`render.yaml`) fills these in by itself. The program
-refuses to start if `SUPABASE_URL` is missing, so a setup mistake
-fails loudly instead of running without sign-in.
+The Blueprint (`render.yaml`) fills these in by itself. As of the
+2026-11-10 fix, every one of these settings also has a built-in
+default inside the program — including the public `SUPABASE_URL` —
+so the service boots even with NO environment variables configured
+at all. The variables above only override the defaults.
 
 Do **not** add a `PORT` variable — Render assigns the port itself and
 the program reads it automatically.

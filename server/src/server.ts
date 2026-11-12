@@ -21,21 +21,27 @@ import { Actions } from "./actions";
 import * as auth from "./auth";
 import { db } from "./db";
 import { ActionError, type ActionCtx, type ActionDef } from "./engine";
-import { supabaseConfigured } from "./supabase";
+import { SUPABASE_URL, supabaseConfigured } from "./supabase";
 
-// Sign-in is Supabase Auth; without the project URL no token can be
-// verified and every student would be locked out. Fail loudly at boot
-// rather than serve a program nobody can sign in to.
+// Sign-in is Supabase Auth. SUPABASE_URL now has a built-in default
+// (the public project URL, see supabase.ts), so the service boots
+// with NO environment variables configured at all. This check stays
+// only as a last-resort guard if the default is ever removed.
 if (!supabaseConfigured) {
   console.error(
-    "SUPABASE_URL is not set — student sign-in (Supabase Auth) cannot be verified. " +
-      "Set SUPABASE_URL (see RENDER-DEPLOY-README.md) and restart.",
+    "SUPABASE_URL is not set and no default is configured — student sign-in " +
+      "(Supabase Auth) cannot be verified.",
   );
   process.exit(1);
 }
 
+// Every setting has a working default — zero dashboard config needed:
+//   PORT — Render assigns it; 8787 locally.
+//   HOST — 0.0.0.0 so Render (and any host) can reach the process;
+//          127.0.0.1 would hide it from the platform's port scan.
+//   DB_PATH — defaults in db.ts to data/bench.db under the project.
 const PORT = Number(process.env.PORT ?? 8787);
-const HOST = process.env.HOST ?? "127.0.0.1";
+const HOST = process.env.HOST?.trim() || "0.0.0.0";
 const DIST = join(import.meta.dir, "../../client/dist");
 
 const actionTable = Actions as Record<string, ActionDef>;
@@ -164,4 +170,4 @@ const server = Bun.serve({
 });
 
 console.log(`Road One program listening on http://${HOST}:${server.port}`);
-console.log(`  client: client/dist  db: ${process.env.DB_PATH ?? "data/bench.db (DB_PATH unset)"}`);
+console.log(`  client: client/dist  db: ${process.env.DB_PATH ?? "data/bench.db (default)"}  supabase: ${SUPABASE_URL}`);
