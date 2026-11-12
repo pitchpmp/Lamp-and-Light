@@ -1,0 +1,4 @@
+name: build site
+on push
+  branches:
+      - main
