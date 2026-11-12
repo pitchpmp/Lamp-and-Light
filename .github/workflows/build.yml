@@ -2,3 +2,10 @@ name: build site
 on  push:
   branches:
       - main
+
+  jobs:
+  build:
+      - name:
+            runs-on:
+                    ubunto-latest
+      
